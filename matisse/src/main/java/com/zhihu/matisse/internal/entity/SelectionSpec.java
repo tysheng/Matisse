@@ -48,6 +48,8 @@ public final class SelectionSpec {
     public float thumbnailScale;
     public ImageEngine imageEngine;
 
+    public boolean singleChoice;
+
     private SelectionSpec() {
     }
 
@@ -78,6 +80,7 @@ public final class SelectionSpec {
         gridExpectedSize = 0;
         thumbnailScale = 0.5f;
         imageEngine = new GlideEngine();
+        singleChoice = false;
     }
 
     public boolean singleSelectionModeEnabled() {

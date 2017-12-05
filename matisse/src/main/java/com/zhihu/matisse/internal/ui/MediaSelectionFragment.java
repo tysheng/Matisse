@@ -38,7 +38,7 @@ import com.zhihu.matisse.internal.utils.UIUtils;
 
 public class MediaSelectionFragment extends Fragment implements
         AlbumMediaCollection.AlbumMediaCallbacks, AlbumMediaAdapter.CheckStateListener,
-        AlbumMediaAdapter.OnMediaClickListener {
+        AlbumMediaAdapter.OnMediaClickListener,AlbumMediaAdapter.SingleChoiceListener {
 
     public static final String EXTRA_ALBUM = "extra_album";
 
@@ -48,6 +48,7 @@ public class MediaSelectionFragment extends Fragment implements
     private SelectionProvider mSelectionProvider;
     private AlbumMediaAdapter.CheckStateListener mCheckStateListener;
     private AlbumMediaAdapter.OnMediaClickListener mOnMediaClickListener;
+    private AlbumMediaAdapter.SingleChoiceListener mSingleChoiceListener;
 
     public static MediaSelectionFragment newInstance(Album album) {
         MediaSelectionFragment fragment = new MediaSelectionFragment();
@@ -70,6 +71,9 @@ public class MediaSelectionFragment extends Fragment implements
         }
         if (context instanceof AlbumMediaAdapter.OnMediaClickListener) {
             mOnMediaClickListener = (AlbumMediaAdapter.OnMediaClickListener) context;
+        }
+        if (context instanceof AlbumMediaAdapter.SingleChoiceListener){
+            mSingleChoiceListener = (AlbumMediaAdapter.SingleChoiceListener) context;
         }
     }
 
@@ -95,6 +99,7 @@ public class MediaSelectionFragment extends Fragment implements
                 mSelectionProvider.provideSelectedItemCollection(), mRecyclerView);
         mAdapter.registerCheckStateListener(this);
         mAdapter.registerOnMediaClickListener(this);
+        mAdapter.registerSingleChoiceListener(this);
         mRecyclerView.setHasFixedSize(true);
 
         int spanCount;
@@ -150,6 +155,13 @@ public class MediaSelectionFragment extends Fragment implements
         if (mOnMediaClickListener != null) {
             mOnMediaClickListener.onMediaClick((Album) getArguments().getParcelable(EXTRA_ALBUM),
                     item, adapterPosition);
+        }
+    }
+
+    @Override
+    public void apply() {
+        if (mSingleChoiceListener != null) {
+            mSingleChoiceListener.apply();
         }
     }
 

@@ -51,6 +51,8 @@ public class AlbumMediaAdapter extends
     private RecyclerView mRecyclerView;
     private int mImageResize;
 
+    private SingleChoiceListener singleChoiceListener;
+
     public AlbumMediaAdapter(Context context, SelectedItemCollection selectedCollection, RecyclerView recyclerView) {
         super(null);
         mSelectionSpec = SelectionSpec.getInstance();
@@ -166,27 +168,40 @@ public class AlbumMediaAdapter extends
 
     @Override
     public void onCheckViewClicked(CheckView checkView, Item item, RecyclerView.ViewHolder holder) {
-        if (mSelectionSpec.countable) {
-            int checkedNum = mSelectedCollection.checkedNumOf(item);
-            if (checkedNum == CheckView.UNCHECKED) {
-                if (assertAddSelection(holder.itemView.getContext(), item)) {
-                    mSelectedCollection.add(item);
-                    notifyCheckStateChanged();
-                }
-            } else {
-                mSelectedCollection.remove(item);
-                notifyCheckStateChanged();
-            }
+        if (mSelectionSpec.singleChoice) {
+            mSelectedCollection.add(item);
+            notifySingleChoice();
         } else {
-            if (mSelectedCollection.isSelected(item)) {
-                mSelectedCollection.remove(item);
-                notifyCheckStateChanged();
-            } else {
-                if (assertAddSelection(holder.itemView.getContext(), item)) {
-                    mSelectedCollection.add(item);
+            if (mSelectionSpec.countable) {
+                int checkedNum = mSelectedCollection.checkedNumOf(item);
+                if (checkedNum == CheckView.UNCHECKED) {
+                    if (assertAddSelection(holder.itemView.getContext(), item)) {
+                        mSelectedCollection.add(item);
+                        notifyCheckStateChanged();
+                    }
+                } else {
+                    mSelectedCollection.remove(item);
                     notifyCheckStateChanged();
                 }
+            } else {
+                if (mSelectedCollection.isSelected(item)) {
+                    mSelectedCollection.remove(item);
+                    notifyCheckStateChanged();
+                } else {
+                    if (assertAddSelection(holder.itemView.getContext(), item)) {
+                        mSelectedCollection.add(item);
+                        notifyCheckStateChanged();
+                    }
+                }
             }
+        }
+
+    }
+
+    private void notifySingleChoice() {
+        notifyDataSetChanged();
+        if (singleChoiceListener != null) {
+            singleChoiceListener.apply();
         }
     }
 
@@ -223,6 +238,11 @@ public class AlbumMediaAdapter extends
     public void unregisterOnMediaClickListener() {
         mOnMediaClickListener = null;
     }
+
+    public void registerSingleChoiceListener(SingleChoiceListener listener) {
+        singleChoiceListener = listener;
+    }
+
 
     public void refreshSelection() {
         GridLayoutManager layoutManager = (GridLayoutManager) mRecyclerView.getLayoutManager();
@@ -265,6 +285,10 @@ public class AlbumMediaAdapter extends
 
     public interface OnPhotoCapture {
         void capture();
+    }
+
+    public interface SingleChoiceListener {
+        void apply();
     }
 
     private static class MediaViewHolder extends RecyclerView.ViewHolder {

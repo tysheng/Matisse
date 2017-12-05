@@ -302,4 +302,8 @@ public final class SelectionCreator {
         }
     }
 
+    public SelectionCreator singleChoice(boolean single) {
+        mSelectionSpec.singleChoice = single;
+        return this;
+    }
 }

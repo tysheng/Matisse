@@ -95,7 +95,8 @@ public class SampleActivity extends AppCompatActivity implements View.OnClickLis
                                             .choose(MimeType.ofImage())
                                             .theme(R.style.Matisse_Dracula)
                                             .countable(false)
-                                            .maxSelectable(9)
+                                            .singleChoice(true)
+                                            .maxSelectable(1)
                                             .imageEngine(new PicassoEngine())
                                             .forResult(REQUEST_CODE_CHOOSE);
                                     break;
